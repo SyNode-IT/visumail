@@ -22,7 +22,7 @@ VisuMail is a modern email management application that helps you organize your e
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/visumail.git
+git clone https://github.com/SyNode-IT/visumail.git
 cd visumail
 ```
 
