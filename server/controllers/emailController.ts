@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth.js';
-import { emailAccountSchema, emailSchema } from '../utils/validation.js';
+import { emailAccountSchema, sendEmailSchema } from '../utils/validation/emailSchemas.js';
 import { EmailRepository } from '../services/database/EmailRepository.js';
 import { IMAPService } from '../services/email/IMAPService.js';
 import { SMTPService } from '../services/email/SMTPService.js';
@@ -76,7 +76,7 @@ export async function addAccount(req: AuthRequest, res: Response) {
 }
 
 export async function sendEmail(req: AuthRequest, res: Response) {
-  const emailData = emailSchema.parse(req.body);
+  const emailData = sendEmailSchema.parse(req.body);
   const userId = req.user?.id;
 
   if (!userId) {

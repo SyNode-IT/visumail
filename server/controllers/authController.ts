@@ -1,17 +1,10 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { emailSchema, passwordSchema } from '../utils/validation.js';
+import { registerSchema, loginSchema } from '../utils/validation/authSchemas.js';
 import { hashPassword, comparePasswords } from '../utils/encryption.js';
 import { UserRepository } from '../services/database/UserRepository.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { AUTH } from '../config/constants.js';
-
-export const registerSchema = z.object({
-  email: emailSchema,
-  password: passwordSchema
-});
-
-export const loginSchema = registerSchema;
 
 export async function register(req: Request, res: Response) {
   const { email, password } = registerSchema.parse(req.body);

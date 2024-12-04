@@ -1,19 +1,22 @@
-import Database from 'better-sqlite3';
+import sqlite3 from 'sqlite3';
+import { open } from 'sqlite';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const dbPath = path.join(__dirname, '../../data/visumail.db');
 
-let db: Database.Database | null = null;
+let db: any = null;
 
 export async function initializeDatabase() {
   if (db) return db;
 
-  db = new Database(dbPath);
+  db = await open({
+    filename: dbPath,
+    driver: sqlite3.Database
+  });
 
-  // Initialize schema
-  db.exec(`
+  await db.exec(`
     PRAGMA foreign_keys = ON;
 
     CREATE TABLE IF NOT EXISTS users (
@@ -57,16 +60,6 @@ export async function initializeDatabase() {
       labels TEXT,
       FOREIGN KEY (account_id) REFERENCES email_accounts (id) ON DELETE CASCADE
     );
-
-    CREATE TABLE IF NOT EXISTS attachments (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      email_id INTEGER NOT NULL,
-      filename TEXT NOT NULL,
-      content_type TEXT NOT NULL,
-      size INTEGER NOT NULL,
-      content BLOB NOT NULL,
-      FOREIGN KEY (email_id) REFERENCES emails (id) ON DELETE CASCADE
-    );
   `);
 
   return db;
@@ -77,20 +70,4 @@ export function getDb() {
     throw new Error('Database not initialized');
   }
   return db;
-}
-
-// Helper functions for common operations
-export function prepare(sql: string) {
-  const database = getDb();
-  return database.prepare(sql);
-}
-
-export function exec(sql: string) {
-  const database = getDb();
-  return database.exec(sql);
-}
-
-export function transaction<T>(cb: () => T): T {
-  const database = getDb();
-  return database.transaction(cb)();
 }
